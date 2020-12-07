@@ -1,4 +1,4 @@
-package com.example.cleanarchitecture.data
+package com.example.cleanarchitecture.data.model.tvshow
 
 data class TvShowList(
     val page: Int,

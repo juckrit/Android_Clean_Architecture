@@ -1,6 +1,4 @@
-package com.example.cleanarchitecture.data
-
-import com.example.cleanarchitecture.data.Movie
+package com.example.cleanarchitecture.data.model.movie
 
 data class MovieList(
     val page: Int,

@@ -1,4 +1,4 @@
-package com.example.cleanarchitecture.data
+package com.example.cleanarchitecture.data.model.artist
 
 data class ArtistList(
     val page: Int,
