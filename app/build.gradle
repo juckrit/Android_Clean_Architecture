@@ -27,6 +27,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "API_KEY" , "\"bcbbbeac2e87efd4d3b0b11e2bdf68c4\""
+        buildConfigField "String", "BASE_URL" , "\"https://api.themoviedb.org/3/\""
     }
 
     buildTypes {
@@ -80,5 +81,14 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
+
+    def daggerVer = "2.28.1"  // or latest version
+
+    implementation "com.google.dagger:dagger:$daggerVer"
+    implementation "com.google.dagger:dagger-android-support:$daggerVer"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVer"
+    kapt "com.google.dagger:dagger-compiler:$daggerVer"
+
+
 
 }
