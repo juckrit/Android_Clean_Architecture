@@ -2,19 +2,19 @@ package com.example.cleanarchitecture.data.model.tvshow
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "popular_tvShows")
 data class TvShow(
-    val backdrop_path: String,
-    val first_air_date: String,
+    @SerializedName("first_air_date")
+    val firstAirDate: String,
     @PrimaryKey
+    @SerializedName("id")
     val id: Int,
+    @SerializedName("name")
     val name: String,
-    val original_language: String,
-    val original_name: String,
+    @SerializedName("overview")
     val overview: String,
-    val popularity: Double,
-    val poster_path: String,
-    val vote_average: Double,
-    val vote_count: Int
+    @SerializedName("poster_path")
+    val posterPath: String
 )

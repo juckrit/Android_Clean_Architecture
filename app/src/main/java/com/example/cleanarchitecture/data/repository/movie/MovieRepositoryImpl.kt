@@ -1,5 +1,6 @@
 package com.example.cleanarchitecture.data.repository.movie
 
+import android.util.Log
 import com.example.cleanarchitecture.data.model.movie.Movie
 import com.example.cleanarchitecture.data.repository.movie.datasource.MovieCacheDataSource
 import com.example.cleanarchitecture.data.repository.movie.datasource.MovieLocalDataSource
@@ -7,31 +8,32 @@ import com.example.cleanarchitecture.data.repository.movie.datasource.MovieRemot
 import com.example.cleanarchitecture.domain.repository.MovieRepository
 
 class MovieRepositoryImpl(
-    private val movieRemoteDataSource: MovieRemoteDataSource,
+    private val movieRemoteDatasource: MovieRemoteDataSource,
     private val movieLocalDataSource: MovieLocalDataSource,
     private val movieCacheDataSource: MovieCacheDataSource
 ) : MovieRepository {
-
-
     override suspend fun getMovies(): List<Movie>? {
-        return getMovieFromCache()
+        return getMoviesFromCache()
     }
 
     override suspend fun updateMovies(): List<Movie>? {
-        val newListOfMovies = getMoviesFromApi()
+        val newListOfMovies = getMoviesFromAPI()
         movieLocalDataSource.clearAll()
         movieLocalDataSource.saveMoviesToDB(newListOfMovies)
         movieCacheDataSource.saveMoviesToCache(newListOfMovies)
-        return  newListOfMovies
+        return newListOfMovies
     }
 
-    suspend fun getMoviesFromApi(): List<Movie> {
-        lateinit var movieList: List<Movie>
+    suspend fun getMoviesFromAPI(): List<Movie> {
+        var movieList = mutableListOf<Movie>()
         try {
-            movieList = movieRemoteDataSource.getMovies().movies
-
-        } catch (e: Exception) {
-
+            val response = movieRemoteDatasource.getMovies()
+            val body = response.body()
+            if (body != null) {
+                movieList = body.movies.toMutableList()
+            }
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
         }
         return movieList
     }
@@ -40,37 +42,35 @@ class MovieRepositoryImpl(
         lateinit var movieList: List<Movie>
         try {
             movieList = movieLocalDataSource.getMoviesFromDB()
-
-        } catch (e: Exception) {
-
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
         }
-
         if (movieList.size > 0) {
             return movieList
         } else {
-            movieList = getMoviesFromApi()
+            movieList = getMoviesFromAPI()
             movieLocalDataSource.saveMoviesToDB(movieList)
         }
-        return movieList
 
+        return movieList
     }
 
-    suspend fun getMovieFromCache(): List<Movie> {
+    suspend fun getMoviesFromCache(): List<Movie> {
         lateinit var movieList: List<Movie>
         try {
             movieList = movieCacheDataSource.getMoviesFromCache()
-
-        } catch (e: Exception) {
-
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
         }
-
         if (movieList.size > 0) {
             return movieList
         } else {
             movieList = getMoviesFromDB()
             movieCacheDataSource.saveMoviesToCache(movieList)
         }
-        return movieList
 
+        return movieList
     }
+
+
 }

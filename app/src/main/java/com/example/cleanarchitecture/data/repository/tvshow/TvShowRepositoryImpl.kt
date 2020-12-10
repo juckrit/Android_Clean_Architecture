@@ -1,11 +1,13 @@
 package com.example.cleanarchitecture.data.repository.tvshow
 
+import android.util.Log
 import com.example.cleanarchitecture.data.model.movie.Movie
 import com.example.cleanarchitecture.data.model.tvshow.TvShow
 import com.example.cleanarchitecture.data.repository.tvshow.datasource.TvShowCacheDataSource
 import com.example.cleanarchitecture.data.repository.tvshow.datasource.TvShowLocalDataSource
 import com.example.cleanarchitecture.data.repository.tvshow.datasource.TvShowRemoteDataSource
 import com.example.cleanarchitecture.domain.repository.TvShowRepository
+import java.lang.Exception
 
 class TvShowRepositoryImpl(
     private val tvShowRemoteDataSource: TvShowRemoteDataSource,
@@ -18,7 +20,7 @@ class TvShowRepositoryImpl(
     }
 
     override suspend fun updateTvShows(): List<TvShow>? {
-        val newListOfTvShows = getTvShowsFromApi()
+        val newListOfTvShows = getTvShowsFromAPI()
         tvShowLocalDataSource.clearAll()
         tvShowLocalDataSource.saveTvShowsToDB(newListOfTvShows)
         tvShowCacheDataSource.saveTvShowsToCache(newListOfTvShows)
@@ -28,53 +30,52 @@ class TvShowRepositoryImpl(
 
 
 
-    suspend fun getTvShowsFromApi(): List<TvShow> {
+    suspend fun getTvShowsFromAPI(): List<TvShow> {
         lateinit var tvShowList: List<TvShow>
         try {
-            tvShowList = tvShowRemoteDataSource.getTvShows().results
-
-        } catch (e: Exception) {
-
+            val response = tvShowRemoteDataSource.getTvShows()
+            val body = response.body()
+            if(body!=null){
+                tvShowList = body.tvShows
+            }
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
         }
         return tvShowList
     }
 
-    suspend fun getTvShowsFromDB(): List<TvShow> {
-        lateinit var tvShowList: List<TvShow>
+    suspend fun getTvShowsFromDB():List<TvShow>{
+        lateinit var tvShowsList: List<TvShow>
         try {
-            tvShowList = tvShowLocalDataSource.getTvShowsFromDB()
-
-        } catch (e: Exception) {
-
+            tvShowsList = tvShowLocalDataSource.getTvShowsFromDB()
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
+        }
+        if(tvShowsList.size>0){
+            return tvShowsList
+        }else{
+            tvShowsList=getTvShowsFromAPI()
+            tvShowLocalDataSource.saveTvShowsToDB(tvShowsList)
         }
 
-        if (tvShowList.size > 0) {
-            return tvShowList
-        } else {
-            tvShowList = getTvShowsFromApi()
-            tvShowLocalDataSource.saveTvShowsToDB(tvShowList)
-        }
-        return tvShowList
-
+        return tvShowsList
     }
 
-    suspend fun getTvShowsFromCache(): List<TvShow> {
-        lateinit var tvShowList: List<TvShow>
+    suspend fun getTvShowsFromCache():List<TvShow>{
+        lateinit var tvShowsList: List<TvShow>
         try {
-            tvShowList = tvShowCacheDataSource.getTvShowsFromCache()
-
-        } catch (e: Exception) {
-
+            tvShowsList =tvShowCacheDataSource.getTvShowsFromCache()
+        } catch (exception: Exception) {
+            Log.i("MyTag", exception.message.toString())
+        }
+        if(tvShowsList.size>0){
+            return tvShowsList
+        }else{
+            tvShowsList=getTvShowsFromDB()
+            tvShowCacheDataSource.saveTvShowsToCache(tvShowsList)
         }
 
-        if (tvShowList.size > 0) {
-            return tvShowList
-        } else {
-            tvShowList = getTvShowsFromDB()
-            tvShowCacheDataSource.saveTvShowsToCache(tvShowList)
-        }
-        return tvShowList
-
+        return tvShowsList
     }
 
 

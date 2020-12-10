@@ -2,15 +2,18 @@ package com.example.cleanarchitecture.data.model.artist
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "popular_artists")
 data class Artist(
-    val adult: Boolean,
-    val gender: Int,
+
     @PrimaryKey
+    @SerializedName("id")
     val id: Int,
-    val known_for_department: String,
+    @SerializedName("name")
     val name: String,
+    @SerializedName("popularity")
     val popularity: Double,
-    val profile_path: String
+    @SerializedName("profile_path")
+    val profilePath: String
 )

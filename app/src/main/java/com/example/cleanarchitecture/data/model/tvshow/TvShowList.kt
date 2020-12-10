@@ -1,8 +1,8 @@
 package com.example.cleanarchitecture.data.model.tvshow
 
+import com.google.gson.annotations.SerializedName
+
 data class TvShowList(
-    val page: Int,
-    val results: List<TvShow>,
-    val total_pages: Int,
-    val total_results: Int
+    @SerializedName("results")
+    val tvShows: List<TvShow>
 )

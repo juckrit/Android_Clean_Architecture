@@ -7,10 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MovieLocalDataSourceImpl(
-    private val movieDao: MovieDao
-) : MovieLocalDataSource {
-
+class MovieLocalDataSourceImpl(private val movieDao:MovieDao):
+    MovieLocalDataSource {
     override suspend fun getMoviesFromDB(): List<Movie> {
         return movieDao.getMovies()
     }
@@ -26,6 +24,4 @@ class MovieLocalDataSourceImpl(
             movieDao.deleteAllMovies()
         }
     }
-
-
 }
